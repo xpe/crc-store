@@ -1,0 +1,20 @@
+[package]
+name = "crc-store"
+version = "0.1.0"
+edition = "2021"
+
+description = "An file-like object that adds checksums to an inner I/O object"
+repository = "https://github.com/xpe/crc-store"
+readme = "README.md"
+license = "MIT OR Apache-2.0"
+categories = ["filesystem"]
+keywords = ["crc", "crc32"]
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+crc32fast = "1.4.2"
+
+[dev-dependencies]
+rand = "0.8.5"
