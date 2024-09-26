@@ -7,7 +7,7 @@
 ```rust
 use std::io::{Cursor, Read, Seek, SeekFrom, Write};
 
-use crc_store::{self, CrcStore};
+use crc_store::CrcStore;
 
 fn main() {
     // create a CrcStore having 16-byte segments
