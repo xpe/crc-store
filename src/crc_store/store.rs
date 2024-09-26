@@ -2,7 +2,7 @@ use std::io::{Read, Seek, SeekFrom, Write};
 
 use crate::Error;
 
-/// Minimum payload length
+/// Minimum body length
 pub const MIN_BODY_LEN: u32 = 1;
 
 /// Minimum segment length
