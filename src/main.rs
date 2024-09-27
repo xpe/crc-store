@@ -42,6 +42,7 @@ fn hex_dump(bytes: &[u8], len: usize) -> String {
     format!("| {} | {} |", a, b)
 }
 
+#[allow(clippy::format_collect)]
 fn hex_string(bytes: &[u8]) -> String {
     bytes.iter().map(|&b| format!("{:02X}", b)).collect()
 }
