@@ -9,6 +9,7 @@
     // https://rust-analyzer.github.io/manual.html#configuration
     "rust-analyzer": {
       "initialization_options": {
+        "linkedProjects": ["Cargo.toml", "fuzz/Cargo.toml"],
         "rustfmt": {
           "extraArgs": ["+nightly"]
         }
