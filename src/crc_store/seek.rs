@@ -8,7 +8,9 @@ impl<I: Read + Write + Seek> Seek for CrcStore<I> {
     fn seek(&mut self, outer_pos: SeekFrom) -> io::Result<u64> {
         let seek_from: SeekFrom = match outer_pos {
             SeekFrom::Start(outer_n) => {
-                let inner_n = self.inner_pos(outer_n);
+                let inner_n = self
+                    .inner_pos(outer_n)
+                    .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "overflow"))?;
                 self.inner_pos = inner_n;
                 SeekFrom::Start(inner_n)
             }
@@ -36,11 +38,14 @@ impl<I: Read + Write + Seek> CrcStore<I> {
     ///
     /// Note: this can be thought of a specialized version of `rel_inner_pos()`
     /// where `inner_pos` is an integer multiple of the segment length.
-    pub fn inner_pos(&self, outer_pos: u64) -> u64 {
+    pub fn inner_pos(&self, outer_pos: u64) -> Option<u64> {
         let b = self.body_len() as u64;
         let segment = outer_pos / b;
         let offset = outer_pos % b;
-        (segment * self.seg_len as u64) + offset + 4
+        segment
+            .checked_mul(self.seg_len as u64)
+            .and_then(|v| v.checked_add(offset))
+            .and_then(|v| v.checked_add(4))
     }
 
     /// Returns the relative inner position for a given relative outer

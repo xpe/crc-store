@@ -22,21 +22,21 @@ fn test_inner_pos_seg_len_7() {
     let store = crc_store_seg_len_7();
 
     // segment 0
-    assert_eq!(store.inner_pos(0), 4);
-    assert_eq!(store.inner_pos(1), 5);
-    assert_eq!(store.inner_pos(2), 6);
+    assert_eq!(store.inner_pos(0), Some(4));
+    assert_eq!(store.inner_pos(1), Some(5));
+    assert_eq!(store.inner_pos(2), Some(6));
     // segment 1
-    assert_eq!(store.inner_pos(3), 11);
-    assert_eq!(store.inner_pos(4), 12);
-    assert_eq!(store.inner_pos(5), 13);
+    assert_eq!(store.inner_pos(3), Some(11));
+    assert_eq!(store.inner_pos(4), Some(12));
+    assert_eq!(store.inner_pos(5), Some(13));
     // segment 2
-    assert_eq!(store.inner_pos(6), 18);
-    assert_eq!(store.inner_pos(7), 19);
-    assert_eq!(store.inner_pos(8), 20);
+    assert_eq!(store.inner_pos(6), Some(18));
+    assert_eq!(store.inner_pos(7), Some(19));
+    assert_eq!(store.inner_pos(8), Some(20));
     // segment 3
-    assert_eq!(store.inner_pos(9), 25);
-    assert_eq!(store.inner_pos(10), 26);
-    assert_eq!(store.inner_pos(11), 27);
+    assert_eq!(store.inner_pos(9), Some(25));
+    assert_eq!(store.inner_pos(10), Some(26));
+    assert_eq!(store.inner_pos(11), Some(27));
 }
 
 /// Example with seg_len=7 (so body_len=3):
