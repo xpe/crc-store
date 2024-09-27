@@ -10,9 +10,6 @@ license = "MIT OR Apache-2.0"
 categories = ["filesystem"]
 keywords = ["crc", "crc32"]
 
-[lib]
-path = "src/lib.rs"
-
 [dependencies]
 crc32fast = "1.4.2"
 
