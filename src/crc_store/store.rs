@@ -37,7 +37,6 @@ const MIN_SEG_LEN: u32 = MIN_BODY_LEN + 4;
 /// ## Undecided
 ///
 /// - will `inner_pos` always point to a body byte?
-/// - a `read` does _not_ validate checksums
 #[derive(Debug)]
 pub struct CrcStore<I: Read + Write + Seek> {
     /// inner I/O object
