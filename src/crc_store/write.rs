@@ -1,12 +1,13 @@
 use std::cmp;
-use std::io::{self, Read, Seek, SeekFrom, Write};
+use std::io::{self, ErrorKind, Read, Seek, SeekFrom, Write};
 
 use crate::{crc32_to_be_bytes, CrcStore};
 
 impl<I: Read + Write + Seek> Write for CrcStore<I> {
     /// Writes to the `CrcStore`.
     ///
-    /// Precondition: the `inner` position points to a body byte
+    /// The precondition and postcondition is the same as a key invariant for
+    /// `CrcStore`: the `inner` position points to a body byte.
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
         let b = self.body_len() as u64;
         let s = self.seg_len as u64;
@@ -24,7 +25,7 @@ impl<I: Read + Write + Seek> Write for CrcStore<I> {
             self.inner.write_all(&buf[i .. i + n])?;
             self.inner_pos += n as u64;
             self.inner_len = self.inner_len.max(self.inner_pos);
-            self.calc_and_write_prev_checksum()?;
+            self.update_prev_checksum()?;
             i += n;
         }
         Ok(i)
@@ -36,64 +37,139 @@ impl<I: Read + Write + Seek> Write for CrcStore<I> {
 }
 
 impl<I: Read + Write + Seek> CrcStore<I> {
-    /// Updates the checksum of the previous segment.
+    /// Updates the "nearest previous" checksum. (The phrase "nearest previous"
+    /// is close but not perfect; see cases below.)
     ///
-    /// Precondition: `inner_pos` must be either
-    /// 1. at the start of a segment
-    /// 2. at the end of the stream
+    /// ## Cases
     ///
-    /// Postcondition: same as precondition
-    fn calc_and_write_prev_checksum(&mut self) -> io::Result<()> {
-        let checksum = self.calc_prev_checksum()?;
-        self.write_prev_checksum(checksum)?;
+    /// There are three cases, two of which are valid. They are illustrated
+    /// below using an example where seg_len=10 (so body_len=6) where 'c' means
+    /// checksum byte and 'B' means body byte:
+    ///
+    /// ```text
+    /// seg 0     seg 1     seg 2     seg 3
+    /// |         |         |         |
+    /// ccccBBBBBBccccBBBBBBccccBBBBBBccccBBBB...
+    /// ```
+    ///
+    /// The cases below use ^^^^ to show which checksum will be updated.
+    ///
+    /// ### Case I
+    ///
+    /// When `inner_pos % seg_len == 0`:
+    ///
+    /// ```text
+    ///                inner_pos=20
+    ///                     |
+    /// ccccBBBBBBccccBBBBBBccccBBBBBBccccBBBB...
+    ///           ^^^^
+    /// ```
+    ///
+    /// ### Case II
+    ///
+    /// When `inner_pos % seg_len >= 5`:
+    ///
+    /// ```text
+    ///           inner_pos=15
+    ///                |
+    /// ccccBBBBBBccccBBBBBBccccBBBBBBccccBBBB...
+    ///           ^^^^
+    /// ```
+    ///
+    /// ### Case III (fails precondition)
+    ///
+    /// When `inner_pos % seg_len < 5`:
+    ///
+    /// ```text
+    ///          inner_pos=14
+    ///               |
+    /// ccccBBBBBBccccBBBBBBccccBBBBBBccccBBBB...
+    ///           ^^^^
+    /// ```
+    ///
+    /// ## Precondition
+    ///
+    /// Either:
+    /// - `inner_pos % seg_len == 0 && inner_pos >= seg_len`; or
+    /// - `inner_pos % seg_len >= 5`; or
+    ///
+    /// ## Postcondition
+    ///
+    /// `inner_pos` unchanged
+    fn update_prev_checksum(&mut self) -> io::Result<()> {
+        let pos = self.locate_prev_checksum();
+        let checksum = self.calc_checksum(pos)?;
+        self.write_checksum(checksum)?;
         Ok(())
     }
 
-    /// Updates the checksum of the previous segment.
-    ///
-    /// Precondition: `inner_pos` must be either
-    /// 1. at the start of a segment
-    /// 2. at the end of the stream
-    ///
-    /// Postcondition: same as precondition
-    fn write_prev_checksum(&mut self, checksum: [u8; 4]) -> io::Result<()> {
+    /// Locate the relative position of the "nearest previous" checksum
+    /// (to be clear, the start of the checksum).
+    fn locate_prev_checksum(&self) -> i64 {
         let s = self.seg_len as u64;
-        assert!(self.inner_pos >= s);
-        let rel_seek = if self.inner_pos % s == 0 {
-            -(s as i64)
-        } else if self.inner_pos == self.inner_len {
-            -((self.inner_pos % s) as i64)
+        let offset = self.inner_pos % s;
+        if offset == 0 && self.inner_pos >= s {
+            -(self.seg_len as i64)
+        } else if offset >= 5 {
+            -(offset as i64)
         } else {
             panic!("failed precondition");
-        };
-        self.inner.seek(SeekFrom::Current(rel_seek))?;
+        }
+    }
+
+    /// Calculate the checksum, leaving `inner_pos` where this checksum could
+    /// be written.
+    ///
+    /// ## Precondition
+    ///
+    /// `(inner_pos + pos) % seg_len == 0`
+    ///
+    /// ## Postconditions
+    ///
+    /// `inner_pos  % seg_len == 0`
+    fn calc_checksum(&mut self, pos: i64) -> io::Result<[u8; 4]> {
+        let i = i64::try_from(self.inner_pos)
+            .map_err(|e| io::Error::new(io::ErrorKind::InvalidInput, e))?;
+
+        // precondition
+        assert!((i + pos) % (self.seg_len as i64) == 0);
+
+        // seek to the body start
+        self.inner.seek(SeekFrom::Current(pos + 4))?;
+
+        // read the body
+        let n = self.body_len() as usize;
+        let mut body = vec![0; n];
+        let mut total = 0; // total bytes read
+        while total < n {
+            match self.inner.read(&mut body[total .. n]) {
+                Ok(0) => break, // EOF
+                Ok(j) => total += j,
+                Err(e) if e.kind() == ErrorKind::Interrupted => continue,
+                Err(e) => return Err(e),
+            }
+        }
+
+        // seek back to the start of the segment
+        self.inner.seek(SeekFrom::Current(pos))?;
+        self.inner_pos = (self.inner_pos as i64 + pos) as u64;
+
+        // postcondition
+        assert_eq!(self.inner_pos % self.seg_len as u64, 0);
+        Ok(crc32_to_be_bytes(&body[.. total]))
+    }
+
+    /// Writes a given checksum to the current location. Then advance to the
+    /// start of the next segment, unless EOF.
+    fn write_checksum(&mut self, checksum: [u8; 4]) -> io::Result<()> {
+        assert_eq!(self.inner_pos % self.seg_len as u64, 0);
         self.inner.write_all(&checksum)?;
-        self.inner.seek(SeekFrom::Current(-rel_seek - 4))?;
-        Ok(())
-    }
+        self.inner_pos += 4;
 
-    /// Calculate the checksum of the previous segment.
-    ///
-    /// Precondition: `inner_pos` must be either
-    /// 1. at the start of a segment
-    /// 2. at the end of the stream
-    ///
-    /// Postcondition: `inner_pos` unchanged
-    fn calc_prev_checksum(&mut self) -> io::Result<[u8; 4]> {
-        let b = self.body_len() as u64;
-        let s = self.seg_len as u64;
-        assert!(self.inner_pos >= s);
-        let rel_seek = if self.inner_pos % s == 0 {
-            -(b as i64)
-        } else if self.inner_pos == self.inner_len {
-            -((self.inner_pos % s) as i64) + 4
-        } else {
-            panic!("failed precondition");
-        };
+        let to_end = self.inner_len - self.inner_pos;
+        let rel_seek = cmp::min(self.seg_len as u64, to_end) as i64;
         self.inner.seek(SeekFrom::Current(rel_seek))?;
-        let mut body = vec![0; -rel_seek as usize];
-        self.inner.read_exact(&mut body)?;
-        let checksum = crc32_to_be_bytes(&body);
-        Ok(checksum)
+        self.inner_pos = (self.inner_pos as i64 + rel_seek) as u64;
+        Ok(())
     }
 }
