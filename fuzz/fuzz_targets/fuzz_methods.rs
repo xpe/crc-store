@@ -6,6 +6,8 @@ use crc_store::CrcStore;
 use crc_store_fuzz::{Method, SeekFrom, Sequence};
 use libfuzzer_sys::fuzz_target;
 
+const MAX_READ_BUF_LEN: u32 = 4194304; // 4 MB
+
 fuzz_target!(|seq: Sequence| {
     let _ = execute_seq(seq);
 });
@@ -24,7 +26,13 @@ fn execute_seq(seq: Sequence) -> Result<(), crc_store::Error> {
 fn call_method(store: &mut CrcStore<Cursor<Vec<u8>>>, method: Method) -> io::Result<()> {
     match method {
         Method::Read { buf_len } => {
-            let mut buf = vec![0u8; buf_len];
+            if buf_len > MAX_READ_BUF_LEN {
+                return Err(io::Error::new(
+                    io::ErrorKind::InvalidInput,
+                    "read buffer length too large",
+                ));
+            }
+            let mut buf = vec![0u8; buf_len as usize];
             store.read(&mut buf)?;
         }
         Method::Write { mut buf } => {
