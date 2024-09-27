@@ -1,4 +1,5 @@
 use std::io::{self, Read, Seek, SeekFrom, Write};
+use std::num::TryFromIntError;
 
 use super::CrcStore;
 
@@ -12,12 +13,16 @@ impl<I: Read + Write + Seek> Seek for CrcStore<I> {
                 SeekFrom::Start(inner_n)
             }
             SeekFrom::Current(outer_n) => {
-                let inner_n = self.rel_inner_pos(outer_n, self.inner_pos);
+                let inner_n = self
+                    .rel_inner_pos(outer_n, self.inner_pos)
+                    .map_err(|e| io::Error::new(io::ErrorKind::InvalidInput, e))?;
                 self.inner_pos = (self.inner_pos as i64 + inner_n) as u64;
                 SeekFrom::Current(inner_n)
             }
             SeekFrom::End(outer_n) => {
-                let inner_n = self.rel_inner_pos(outer_n, self.inner_len);
+                let inner_n = self
+                    .rel_inner_pos(outer_n, self.inner_len)
+                    .map_err(|e| io::Error::new(io::ErrorKind::InvalidInput, e))?;
                 self.inner_pos = (self.inner_pos as i64 + inner_n) as u64;
                 SeekFrom::End(inner_n)
             }
@@ -65,8 +70,12 @@ impl<I: Read + Write + Seek> CrcStore<I> {
     /// |             1 |               1 |
     /// |             2 |               6 |
     /// |             3 |               7 |
-    pub fn rel_inner_pos(&self, rel_outer_pos: i64, inner_pos: u64) -> i64 {
-        let b = self.body_len() as i64;
+    pub fn rel_inner_pos(
+        &self,
+        rel_outer_pos: i64,
+        inner_pos: u64,
+    ) -> Result<i64, TryFromIntError> {
+        let b = i64::try_from(self.body_len())?;
         let s = self.seg_len as u64;
         let offset = (inner_pos % s) as i64;
         assert!(offset >= 4);
@@ -77,7 +86,7 @@ impl<I: Read + Write + Seek> CrcStore<I> {
             body_offset - b + 1 // == -((b-1)-body_offset)
         };
         let checksums_to_skip = (rel_outer_pos + shift) / b;
-        rel_outer_pos + checksums_to_skip * 4
+        Ok(rel_outer_pos + checksums_to_skip * 4)
     }
 
     /// Returns the absolute outer position for a given absolute inner position.

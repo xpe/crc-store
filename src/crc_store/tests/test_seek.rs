@@ -57,25 +57,25 @@ fn test_rel_inner_pos_seg_len_7_body_offset_1() {
 
     let inner_pos = 19;
     // segment 1
-    assert_eq!(store.rel_inner_pos(-7, inner_pos), -15);
-    assert_eq!(store.rel_inner_pos(-6, inner_pos), -14);
-    assert_eq!(store.rel_inner_pos(-5, inner_pos), -13);
+    assert_eq!(store.rel_inner_pos(-7, inner_pos), Ok(-15));
+    assert_eq!(store.rel_inner_pos(-6, inner_pos), Ok(-14));
+    assert_eq!(store.rel_inner_pos(-5, inner_pos), Ok(-13));
     // segment 2
-    assert_eq!(store.rel_inner_pos(-4, inner_pos), -8);
-    assert_eq!(store.rel_inner_pos(-3, inner_pos), -7);
-    assert_eq!(store.rel_inner_pos(-2, inner_pos), -6);
+    assert_eq!(store.rel_inner_pos(-4, inner_pos), Ok(-8));
+    assert_eq!(store.rel_inner_pos(-3, inner_pos), Ok(-7));
+    assert_eq!(store.rel_inner_pos(-2, inner_pos), Ok(-6));
     // segment 2
-    assert_eq!(store.rel_inner_pos(-1, inner_pos), -1);
-    assert_eq!(store.rel_inner_pos(0, inner_pos), 0);
-    assert_eq!(store.rel_inner_pos(1, inner_pos), 1);
+    assert_eq!(store.rel_inner_pos(-1, inner_pos), Ok(-1));
+    assert_eq!(store.rel_inner_pos(0, inner_pos), Ok(0));
+    assert_eq!(store.rel_inner_pos(1, inner_pos), Ok(1));
     // segment 3
-    assert_eq!(store.rel_inner_pos(2, inner_pos), 6);
-    assert_eq!(store.rel_inner_pos(3, inner_pos), 7);
-    assert_eq!(store.rel_inner_pos(4, inner_pos), 8);
+    assert_eq!(store.rel_inner_pos(2, inner_pos), Ok(6));
+    assert_eq!(store.rel_inner_pos(3, inner_pos), Ok(7));
+    assert_eq!(store.rel_inner_pos(4, inner_pos), Ok(8));
     // segment 4
-    assert_eq!(store.rel_inner_pos(5, inner_pos), 13);
-    assert_eq!(store.rel_inner_pos(6, inner_pos), 14);
-    assert_eq!(store.rel_inner_pos(7, inner_pos), 15);
+    assert_eq!(store.rel_inner_pos(5, inner_pos), Ok(13));
+    assert_eq!(store.rel_inner_pos(6, inner_pos), Ok(14));
+    assert_eq!(store.rel_inner_pos(7, inner_pos), Ok(15));
 }
 
 /// Example with seg_len=9 (so body_len=5):
@@ -150,25 +150,25 @@ fn test_rel_inner_pos_seg_len_8_body_offset_0() {
     let store = crc_store_seg_len_8();
     let inner_pos = 20;
     // segment 1
-    assert_eq!(store.rel_inner_pos(-4, inner_pos), -8);
-    assert_eq!(store.rel_inner_pos(-3, inner_pos), -7);
-    assert_eq!(store.rel_inner_pos(-2, inner_pos), -6);
-    assert_eq!(store.rel_inner_pos(-1, inner_pos), -5);
+    assert_eq!(store.rel_inner_pos(-4, inner_pos), Ok(-8));
+    assert_eq!(store.rel_inner_pos(-3, inner_pos), Ok(-7));
+    assert_eq!(store.rel_inner_pos(-2, inner_pos), Ok(-6));
+    assert_eq!(store.rel_inner_pos(-1, inner_pos), Ok(-5));
     // segment 2
-    assert_eq!(store.rel_inner_pos(0, inner_pos), 0);
-    assert_eq!(store.rel_inner_pos(1, inner_pos), 1);
-    assert_eq!(store.rel_inner_pos(2, inner_pos), 2);
-    assert_eq!(store.rel_inner_pos(3, inner_pos), 3);
+    assert_eq!(store.rel_inner_pos(0, inner_pos), Ok(0));
+    assert_eq!(store.rel_inner_pos(1, inner_pos), Ok(1));
+    assert_eq!(store.rel_inner_pos(2, inner_pos), Ok(2));
+    assert_eq!(store.rel_inner_pos(3, inner_pos), Ok(3));
     // segment 3
-    assert_eq!(store.rel_inner_pos(4, inner_pos), 8);
-    assert_eq!(store.rel_inner_pos(5, inner_pos), 9);
-    assert_eq!(store.rel_inner_pos(6, inner_pos), 10);
-    assert_eq!(store.rel_inner_pos(7, inner_pos), 11);
+    assert_eq!(store.rel_inner_pos(4, inner_pos), Ok(8));
+    assert_eq!(store.rel_inner_pos(5, inner_pos), Ok(9));
+    assert_eq!(store.rel_inner_pos(6, inner_pos), Ok(10));
+    assert_eq!(store.rel_inner_pos(7, inner_pos), Ok(11));
     // segment 4
-    assert_eq!(store.rel_inner_pos(8, inner_pos), 16);
-    assert_eq!(store.rel_inner_pos(9, inner_pos), 17);
-    assert_eq!(store.rel_inner_pos(10, inner_pos), 18);
-    assert_eq!(store.rel_inner_pos(11, inner_pos), 19);
+    assert_eq!(store.rel_inner_pos(8, inner_pos), Ok(16));
+    assert_eq!(store.rel_inner_pos(9, inner_pos), Ok(17));
+    assert_eq!(store.rel_inner_pos(10, inner_pos), Ok(18));
+    assert_eq!(store.rel_inner_pos(11, inner_pos), Ok(19));
 }
 
 /// Example with seg_len=8 (so body_len=4):
@@ -188,25 +188,25 @@ fn test_rel_inner_pos_seg_len_8_body_offset_1() {
     let store = crc_store_seg_len_8();
     let inner_pos = 21;
     // segment 1
-    assert_eq!(store.rel_inner_pos(-5, inner_pos), -9);
-    assert_eq!(store.rel_inner_pos(-4, inner_pos), -8);
-    assert_eq!(store.rel_inner_pos(-3, inner_pos), -7);
-    assert_eq!(store.rel_inner_pos(-2, inner_pos), -6);
+    assert_eq!(store.rel_inner_pos(-5, inner_pos), Ok(-9));
+    assert_eq!(store.rel_inner_pos(-4, inner_pos), Ok(-8));
+    assert_eq!(store.rel_inner_pos(-3, inner_pos), Ok(-7));
+    assert_eq!(store.rel_inner_pos(-2, inner_pos), Ok(-6));
     // segment 2
-    assert_eq!(store.rel_inner_pos(-1, inner_pos), -1);
-    assert_eq!(store.rel_inner_pos(0, inner_pos), 0);
-    assert_eq!(store.rel_inner_pos(1, inner_pos), 1);
-    assert_eq!(store.rel_inner_pos(2, inner_pos), 2);
+    assert_eq!(store.rel_inner_pos(-1, inner_pos), Ok(-1));
+    assert_eq!(store.rel_inner_pos(0, inner_pos), Ok(0));
+    assert_eq!(store.rel_inner_pos(1, inner_pos), Ok(1));
+    assert_eq!(store.rel_inner_pos(2, inner_pos), Ok(2));
     // segment 3
-    assert_eq!(store.rel_inner_pos(3, inner_pos), 7);
-    assert_eq!(store.rel_inner_pos(4, inner_pos), 8);
-    assert_eq!(store.rel_inner_pos(5, inner_pos), 9);
-    assert_eq!(store.rel_inner_pos(6, inner_pos), 10);
+    assert_eq!(store.rel_inner_pos(3, inner_pos), Ok(7));
+    assert_eq!(store.rel_inner_pos(4, inner_pos), Ok(8));
+    assert_eq!(store.rel_inner_pos(5, inner_pos), Ok(9));
+    assert_eq!(store.rel_inner_pos(6, inner_pos), Ok(10));
     // segment 4
-    assert_eq!(store.rel_inner_pos(7, inner_pos), 15);
-    assert_eq!(store.rel_inner_pos(8, inner_pos), 16);
-    assert_eq!(store.rel_inner_pos(9, inner_pos), 17);
-    assert_eq!(store.rel_inner_pos(10, inner_pos), 18);
+    assert_eq!(store.rel_inner_pos(7, inner_pos), Ok(15));
+    assert_eq!(store.rel_inner_pos(8, inner_pos), Ok(16));
+    assert_eq!(store.rel_inner_pos(9, inner_pos), Ok(17));
+    assert_eq!(store.rel_inner_pos(10, inner_pos), Ok(18));
 }
 
 /// Example with seg_len=8 (so body_len=4):
@@ -226,25 +226,25 @@ fn test_rel_inner_pos_seg_len_8_body_offset_2() {
     let store = crc_store_seg_len_8();
     let inner_pos = 22;
     // segment 1
-    assert_eq!(store.rel_inner_pos(-6, inner_pos), -10);
-    assert_eq!(store.rel_inner_pos(-5, inner_pos), -9);
-    assert_eq!(store.rel_inner_pos(-4, inner_pos), -8);
-    assert_eq!(store.rel_inner_pos(-3, inner_pos), -7);
+    assert_eq!(store.rel_inner_pos(-6, inner_pos), Ok(-10));
+    assert_eq!(store.rel_inner_pos(-5, inner_pos), Ok(-9));
+    assert_eq!(store.rel_inner_pos(-4, inner_pos), Ok(-8));
+    assert_eq!(store.rel_inner_pos(-3, inner_pos), Ok(-7));
     // segment 2
-    assert_eq!(store.rel_inner_pos(-2, inner_pos), -2);
-    assert_eq!(store.rel_inner_pos(-1, inner_pos), -1);
-    assert_eq!(store.rel_inner_pos(0, inner_pos), 0);
-    assert_eq!(store.rel_inner_pos(1, inner_pos), 1);
+    assert_eq!(store.rel_inner_pos(-2, inner_pos), Ok(-2));
+    assert_eq!(store.rel_inner_pos(-1, inner_pos), Ok(-1));
+    assert_eq!(store.rel_inner_pos(0, inner_pos), Ok(0));
+    assert_eq!(store.rel_inner_pos(1, inner_pos), Ok(1));
     // segment 3
-    assert_eq!(store.rel_inner_pos(2, inner_pos), 6);
-    assert_eq!(store.rel_inner_pos(3, inner_pos), 7);
-    assert_eq!(store.rel_inner_pos(4, inner_pos), 8);
-    assert_eq!(store.rel_inner_pos(5, inner_pos), 9);
+    assert_eq!(store.rel_inner_pos(2, inner_pos), Ok(6));
+    assert_eq!(store.rel_inner_pos(3, inner_pos), Ok(7));
+    assert_eq!(store.rel_inner_pos(4, inner_pos), Ok(8));
+    assert_eq!(store.rel_inner_pos(5, inner_pos), Ok(9));
     // segment 4
-    assert_eq!(store.rel_inner_pos(6, inner_pos), 14);
-    assert_eq!(store.rel_inner_pos(7, inner_pos), 15);
-    assert_eq!(store.rel_inner_pos(8, inner_pos), 16);
-    assert_eq!(store.rel_inner_pos(9, inner_pos), 17);
+    assert_eq!(store.rel_inner_pos(6, inner_pos), Ok(14));
+    assert_eq!(store.rel_inner_pos(7, inner_pos), Ok(15));
+    assert_eq!(store.rel_inner_pos(8, inner_pos), Ok(16));
+    assert_eq!(store.rel_inner_pos(9, inner_pos), Ok(17));
 }
 
 /// Example with seg_len=8 (so body_len=4):
@@ -264,23 +264,23 @@ fn test_rel_inner_pos_seg_len_8_body_offset_3() {
     let store = crc_store_seg_len_8();
     let inner_pos = 23;
     // segment 1
-    assert_eq!(store.rel_inner_pos(-7, inner_pos), -11);
-    assert_eq!(store.rel_inner_pos(-6, inner_pos), -10);
-    assert_eq!(store.rel_inner_pos(-5, inner_pos), -9);
-    assert_eq!(store.rel_inner_pos(-4, inner_pos), -8);
+    assert_eq!(store.rel_inner_pos(-7, inner_pos), Ok(-11));
+    assert_eq!(store.rel_inner_pos(-6, inner_pos), Ok(-10));
+    assert_eq!(store.rel_inner_pos(-5, inner_pos), Ok(-9));
+    assert_eq!(store.rel_inner_pos(-4, inner_pos), Ok(-8));
     // segment 2
-    assert_eq!(store.rel_inner_pos(-3, inner_pos), -3);
-    assert_eq!(store.rel_inner_pos(-2, inner_pos), -2);
-    assert_eq!(store.rel_inner_pos(-1, inner_pos), -1);
-    assert_eq!(store.rel_inner_pos(0, inner_pos), 0);
+    assert_eq!(store.rel_inner_pos(-3, inner_pos), Ok(-3));
+    assert_eq!(store.rel_inner_pos(-2, inner_pos), Ok(-2));
+    assert_eq!(store.rel_inner_pos(-1, inner_pos), Ok(-1));
+    assert_eq!(store.rel_inner_pos(0, inner_pos), Ok(0));
     // segment 3
-    assert_eq!(store.rel_inner_pos(1, inner_pos), 5);
-    assert_eq!(store.rel_inner_pos(2, inner_pos), 6);
-    assert_eq!(store.rel_inner_pos(3, inner_pos), 7);
-    assert_eq!(store.rel_inner_pos(4, inner_pos), 8);
+    assert_eq!(store.rel_inner_pos(1, inner_pos), Ok(5));
+    assert_eq!(store.rel_inner_pos(2, inner_pos), Ok(6));
+    assert_eq!(store.rel_inner_pos(3, inner_pos), Ok(7));
+    assert_eq!(store.rel_inner_pos(4, inner_pos), Ok(8));
     // segment 4
-    assert_eq!(store.rel_inner_pos(5, inner_pos), 13);
-    assert_eq!(store.rel_inner_pos(6, inner_pos), 14);
-    assert_eq!(store.rel_inner_pos(7, inner_pos), 15);
-    assert_eq!(store.rel_inner_pos(8, inner_pos), 16);
+    assert_eq!(store.rel_inner_pos(5, inner_pos), Ok(13));
+    assert_eq!(store.rel_inner_pos(6, inner_pos), Ok(14));
+    assert_eq!(store.rel_inner_pos(7, inner_pos), Ok(15));
+    assert_eq!(store.rel_inner_pos(8, inner_pos), Ok(16));
 }
