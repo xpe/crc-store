@@ -80,7 +80,7 @@ impl<I: Read + Write + Seek> CrcStore<I> {
         rel_outer_pos: i64,
         inner_pos: u64,
     ) -> Result<i64, TryFromIntError> {
-        let b = i64::try_from(self.body_len())?;
+        let b = i64::from(self.body_len());
         let s = self.seg_len as u64;
         let offset = i64::try_from(inner_pos % s)?;
         assert!(offset >= 4);
