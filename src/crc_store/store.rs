@@ -25,6 +25,7 @@ const MIN_SEG_LEN: u32 = MIN_BODY_LEN + 4;
 /// For all functions:
 /// - `inner_len` will match the `inner` length
 /// - `inner_pos` will match the `inner` position
+/// - `inner_pos` will always point to a body byte position
 ///
 /// For `write()`:
 /// - `inner` will have correct checksums
@@ -33,10 +34,6 @@ const MIN_SEG_LEN: u32 = MIN_BODY_LEN + 4;
 ///
 /// - `read()` does _not_ validate `inner` checksums
 /// - call `validate()` to validate checksums
-///
-/// ## Undecided
-///
-/// - will `inner_pos` always point to a body byte?
 #[derive(Debug)]
 pub struct CrcStore<I: Read + Write + Seek> {
     /// inner I/O object
@@ -63,13 +60,14 @@ impl<I: Read + Write + Seek> CrcStore<I> {
         self.seg_len - 4
     }
 
-    /// Returns a new `CrcStore`. Seeks to the start of the inner I/O object.
+    /// Returns a new `CrcStore`. Seeks to the first segment's first body byte
+    /// (even if this byte doesn't exist yet), in the inner I/O object.
     pub fn new(seg_len: u32, mut inner: I) -> Result<Self, Error> {
         if seg_len < MIN_SEG_LEN {
             return Err(Error::SegmentTooShort);
         }
         let inner_len = inner.seek(SeekFrom::End(0))?;
-        let inner_pos = inner.seek(SeekFrom::Start(0))?;
+        let inner_pos = inner.seek(SeekFrom::Start(4))?;
         Ok(Self {
             inner,
             inner_len,
