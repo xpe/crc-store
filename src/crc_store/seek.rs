@@ -55,19 +55,18 @@ impl<I: Read + Write + Seek> CrcStore<I> {
     ///
     /// ## Example
     ///
-    /// Here is an example with seg_len = 7:
+    /// Here is an example with seg_len = 7 where 'c' means checksum byte and
+    /// 'B' means body byte:
     ///
+    /// ```text
     /// seg 0  seg 1  seg 2  seg 3
     /// |      |      |      |
     /// ccccBBBccccBBBccccBBBccccB...
     ///             |
-    ///        inner_pos = 12
-    ///
-    /// - "cccc" is the 4-byte checksum
-    /// - "BBB" is the 3-byte body
+    ///        inner_pos=12
     ///
     /// | rel_outer_pos | rel_inner_pos() |
-    /// | ------------- | --------------- |
+    /// |---------------|-----------------|
     /// |            -3 |              -9 |
     /// |            -2 |              -2 |
     /// |            -1 |              -1 |
@@ -75,6 +74,7 @@ impl<I: Read + Write + Seek> CrcStore<I> {
     /// |             1 |               1 |
     /// |             2 |               6 |
     /// |             3 |               7 |
+    /// ```
     pub fn rel_inner_pos(
         &self,
         rel_outer_pos: i64,
