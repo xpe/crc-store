@@ -17,8 +17,8 @@ impl<I: Read + Write + Seek> CrcStore<I> {
             while total < n {
                 match self.inner.read(&mut buf[total .. n]) {
                     Ok(0) => break 'outer, // EOF
-                    Ok(n) if n < 5 => return Err(ValidateError::SegTooShort(seg_idx)),
-                    Ok(n) => total += n,
+                    Ok(j) if j < 5 => return Err(ValidateError::SegTooShort(seg_idx)),
+                    Ok(j) => total += j,
                     Err(e) if e.kind() == ErrorKind::Interrupted => continue,
                     Err(e) => return Err(ValidateError::Io(e)),
                 }
