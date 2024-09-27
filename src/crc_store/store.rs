@@ -5,8 +5,11 @@ use crate::Error;
 /// Minimum body length
 pub const MIN_BODY_LEN: u32 = 1;
 
-/// Minimum segment length
+/// Minimum segment length, inclusive
 const MIN_SEG_LEN: u32 = MIN_BODY_LEN + 4;
+
+/// Maximum segment length, inclusive
+const MAX_SEG_LEN: u32 = 65536;
 
 /// Provides an I/O interface that adds checksums to an inner I/O object.
 ///
@@ -64,7 +67,9 @@ impl<I: Read + Write + Seek> CrcStore<I> {
     /// (even if this byte doesn't exist yet), in the inner I/O object.
     pub fn new(seg_len: u32, mut inner: I) -> Result<Self, Error> {
         if seg_len < MIN_SEG_LEN {
-            return Err(Error::SegmentTooShort);
+            return Err(Error::SegmentTooSmall);
+        } else if seg_len > MAX_SEG_LEN {
+            return Err(Error::SegmentTooLarge);
         }
         let inner_len = inner.seek(SeekFrom::End(0))?;
         let inner_pos = inner.seek(SeekFrom::Start(4))?;

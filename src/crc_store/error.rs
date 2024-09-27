@@ -2,7 +2,8 @@ use std::io;
 
 #[derive(Debug)]
 pub enum Error {
-    SegmentTooShort,
+    SegmentTooSmall,
+    SegmentTooLarge,
     Io(io::Error),
 }
 
