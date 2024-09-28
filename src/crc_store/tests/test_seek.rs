@@ -1,4 +1,5 @@
-use super::helpers::{valid_crc_store, Cursor};
+use super::helpers as h;
+use super::helpers::Cursor;
 use crate::CrcStore;
 
 /// Returns a `CrcStore` having seg_len=7 and body_len=3.
@@ -6,7 +7,7 @@ fn crc_store_seg_len_7() -> CrcStore<Cursor> {
     let seg_len: u32 = 7; // body_len=3
     let len = 6 * seg_len as usize;
     let mut rng = rand::thread_rng();
-    valid_crc_store(&mut rng, seg_len, len)
+    h::valid_crc_store(&mut rng, seg_len, len)
 }
 
 #[test]
@@ -91,7 +92,7 @@ fn test_outer_pos_seg_len_7() {
     let seg_len: u32 = 9;
     let len = 5 * seg_len as usize;
     let mut rng = rand::thread_rng();
-    let store = valid_crc_store(&mut rng, seg_len, len);
+    let store = h::valid_crc_store(&mut rng, seg_len, len);
 
     // segment 0
     assert_eq!(store.outer_pos(0), None);
@@ -130,7 +131,7 @@ fn crc_store_seg_len_8() -> CrcStore<Cursor> {
     let seg_len: u32 = 8; // body_len=4
     let len = 6 * seg_len as usize;
     let mut rng = rand::thread_rng();
-    valid_crc_store(&mut rng, seg_len, len)
+    h::valid_crc_store(&mut rng, seg_len, len)
 }
 
 /// Example with seg_len=8 (so body_len=4):
