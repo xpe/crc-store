@@ -72,6 +72,9 @@ impl<I: Read + Write + Seek> CrcStore<I> {
             return Err(Error::SegmentTooLarge);
         }
         let inner_len = inner.seek(SeekFrom::End(0))?;
+        if inner_len > 0 && inner_len < MIN_SEG_LEN as u64 {
+            return Err(Error::InvalidInner);
+        }
         let inner_pos = inner.seek(SeekFrom::Start(4))?;
         Ok(Self {
             inner,

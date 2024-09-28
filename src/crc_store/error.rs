@@ -4,6 +4,7 @@ use std::io;
 pub enum Error {
     SegmentTooSmall,
     SegmentTooLarge,
+    InvalidInner,
     Io(io::Error),
 }
 
