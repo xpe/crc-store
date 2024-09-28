@@ -1,6 +1,16 @@
+use std::io::{Seek, SeekFrom};
+
 use super::helpers as h;
 use super::helpers::Cursor;
 use crate::CrcStore;
+
+#[test]
+fn test_seek_from_end_0_len_0() {
+    let seg_len: u32 = 128; // body_len=124
+    let mut store = h::empty_crc_store(seg_len);
+    let result = store.seek(SeekFrom::End(0));
+    assert!(result.is_ok());
+}
 
 /// Returns a `CrcStore` having seg_len=7 and body_len=3.
 fn crc_store_seg_len_7() -> CrcStore<Cursor> {

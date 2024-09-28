@@ -22,11 +22,15 @@ impl<I: Read + Write + Seek> Seek for CrcStore<I> {
                 SeekFrom::Current(inner_n)
             }
             SeekFrom::End(outer_n) => {
-                let inner_n = self
-                    .rel_inner_pos(outer_n, self.inner_len)
-                    .map_err(|e| io::Error::new(io::ErrorKind::InvalidInput, e))?;
-                self.inner_pos = (self.inner_pos as i64 + inner_n) as u64;
-                SeekFrom::End(inner_n)
+                if self.inner_len == 0 {
+                    SeekFrom::End(4)
+                } else {
+                    let inner_n = self
+                        .rel_inner_pos(outer_n, self.inner_len)
+                        .map_err(|e| io::Error::new(io::ErrorKind::InvalidInput, e))?;
+                    self.inner_pos = (self.inner_pos as i64 + inner_n) as u64;
+                    SeekFrom::End(inner_n)
+                }
             }
         };
         self.inner.seek(seek_from)
