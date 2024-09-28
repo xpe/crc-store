@@ -5,7 +5,7 @@ use crate::CrcStore;
 
 /// Returns a `CrcStore` having seg_len=9 and body_len=5.
 fn crc_store_seg_len_9() -> CrcStore<Cursor> {
-    let seg_len: u32 = 9; // body_len = 5;
+    let seg_len: u32 = 9; // body_len=5
     let len = 3 * seg_len as usize;
     let mut rng = rand::thread_rng();
     valid_crc_store(&mut rng, seg_len, len)
@@ -38,7 +38,7 @@ fn test_crc_store_read_seg_len_9_start_1() {
 
 /// Returns a `CrcStore` having seg_len=10 and body_len=6.
 fn crc_store_seg_len_10() -> CrcStore<Cursor> {
-    let seg_len: u32 = 10; // body_len = 5;
+    let seg_len: u32 = 10; // body_len=6
     let len = 3 * seg_len as usize;
     let mut rng = rand::thread_rng();
     valid_crc_store(&mut rng, seg_len, len)

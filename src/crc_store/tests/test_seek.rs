@@ -3,7 +3,7 @@ use crate::CrcStore;
 
 /// Returns a `CrcStore` having seg_len=7 and body_len=3.
 fn crc_store_seg_len_7() -> CrcStore<Cursor> {
-    let seg_len: u32 = 7; // body_len = 3;
+    let seg_len: u32 = 7; // body_len=3
     let len = 6 * seg_len as usize;
     let mut rng = rand::thread_rng();
     valid_crc_store(&mut rng, seg_len, len)
@@ -127,7 +127,7 @@ fn test_outer_pos_seg_len_7() {
 
 /// Returns a `CrcStore` having seg_len=8 and body_len=4.
 fn crc_store_seg_len_8() -> CrcStore<Cursor> {
-    let seg_len: u32 = 8; // body_len = 5;
+    let seg_len: u32 = 8; // body_len=4
     let len = 6 * seg_len as usize;
     let mut rng = rand::thread_rng();
     valid_crc_store(&mut rng, seg_len, len)
