@@ -1,10 +1,14 @@
 use super::helpers::Cursor;
-use crate::{CrcStore, Error};
+use crate::{Config, CrcStore, Error};
 
 fn crc_store(data: Vec<u8>) -> Result<CrcStore<Cursor>, Error> {
+    let config = Config {
+        seg_len: 128,
+        buf_len: 256,
+        validate_on_read: false,
+    };
     let cursor = Cursor::new(data);
-    let seg_len: u32 = 128; // body_len=124
-    CrcStore::new(seg_len, cursor)
+    CrcStore::new(config, cursor)
 }
 
 #[test]
@@ -16,25 +20,25 @@ fn test_new_len_0() {
 #[test]
 fn test_new_len_1() {
     let result = crc_store(vec![1]);
-    assert!(matches!(result, Err(Error::InvalidInner)));
+    assert!(matches!(result, Err(Error::BadInnerLen)));
 }
 
 #[test]
 fn test_new_len_2() {
     let result = crc_store(vec![1, 2]);
-    assert!(matches!(result, Err(Error::InvalidInner)));
+    assert!(matches!(result, Err(Error::BadInnerLen)));
 }
 
 #[test]
 fn test_new_len_3() {
     let result = crc_store(vec![1, 2, 3]);
-    assert!(matches!(result, Err(Error::InvalidInner)));
+    assert!(matches!(result, Err(Error::BadInnerLen)));
 }
 
 #[test]
 fn test_new_len_4() {
     let result = crc_store(vec![1, 2, 3, 4]);
-    assert!(matches!(result, Err(Error::InvalidInner)));
+    assert!(matches!(result, Err(Error::BadInnerLen)));
 }
 
 #[test]

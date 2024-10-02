@@ -1,5 +1,16 @@
-mod crc32;
-mod crc_store;
+mod config;
+mod error;
+mod read;
+mod seek;
+mod store;
+mod utility;
+mod validate;
+mod write;
 
-pub use crc32::*;
-pub use crc_store::*;
+pub use config::*;
+pub use error::*;
+pub use store::*;
+
+#[cfg(test)]
+#[path = "tests/lib.rs"]
+mod tests;
