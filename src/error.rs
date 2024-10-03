@@ -11,6 +11,7 @@ pub enum Error {
 pub enum ConfigError {
     Seg(LenError),
     Buf(LenError),
+    Unimplemented,
 }
 
 #[derive(Debug)]

@@ -23,7 +23,10 @@ impl<I: Read + Write + Seek> Read for CrcStore<I> {
             }
             i += bytes_read;
             if self.cfg.validate_on_read {
-                todo!();
+                return Err(io::Error::new(
+                    io::ErrorKind::InvalidInput,
+                    "validate_on_read not yet implemented",
+                ));
             }
             if self.inner_pos % s == b {
                 self.inner_pos = self.inner.seek(SeekFrom::Current(4))?;

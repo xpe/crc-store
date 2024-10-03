@@ -1,4 +1,4 @@
-use crate::ConfigError::{self, Buf, Seg};
+use crate::ConfigError::{self, Buf, Seg, Unimplemented};
 use crate::LenError::{NotPow2, TooLarge, TooSmall};
 
 /// Minimum segment length, inclusive
@@ -42,7 +42,7 @@ impl Config {
             Err(Buf(NotPow2))
         } else {
             if self.validate_on_read {
-                todo!();
+                return Err(Unimplemented);
             }
             Ok(())
         }
