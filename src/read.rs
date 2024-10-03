@@ -11,10 +11,11 @@ impl<I: Read + Write + Seek> Read for CrcStore<I> {
         let s = self.cfg.seg_len as u64;
         assert!(self.inner_pos % s < b);
         let mut i = 0;
-        while i < buf.len() {
+        while i < buf.len() && self.inner_pos < self.inner_len {
             // each iteration reads as much of a segment as it can
             let buf_remain = buf.len() - i;
             let body_remain = (b - (self.inner_pos % s)) as usize;
+            assert!(self.inner_len > 4);
             let to_last_checksum = (self.inner_len - 4 - self.inner_pos) as usize;
             let n = min3(buf_remain, body_remain, to_last_checksum);
             let bytes_read = self.read_buf(&mut buf[i .. i + n])?;
