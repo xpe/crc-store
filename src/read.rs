@@ -1,7 +1,6 @@
-use std::cmp::min;
 use std::io::{self, Read, Seek, SeekFrom, Write};
 
-use super::CrcStore;
+use crate::{min3, CrcStore};
 
 impl<I: Read + Write + Seek> Read for CrcStore<I> {
     /// Reads from the `CrcStore`.
@@ -15,17 +14,20 @@ impl<I: Read + Write + Seek> Read for CrcStore<I> {
         while i < buf.len() {
             // each iteration reads as much of a segment as it can
             let buf_remain = buf.len() - i;
-            let body_remain = b - (self.inner_pos % s);
-            let n = min(buf_remain, body_remain as usize);
+            let body_remain = (b - (self.inner_pos % s)) as usize;
+            let to_last_checksum = (self.inner_len - 4 - self.inner_pos) as usize;
+            let n = min3(buf_remain, body_remain, to_last_checksum);
             let bytes_read = self.read_buf(&mut buf[i .. i + n])?;
-            assert!(bytes_read > 0);
+            if bytes_read == 0 {
+                break;
+            }
             i += bytes_read;
-
             if self.cfg.validate_on_read {
                 todo!();
             }
-            self.inner.seek(SeekFrom::Current(4))?;
-            self.inner_pos += 4;
+            if self.inner_pos % s == b {
+                self.inner_pos = self.inner.seek(SeekFrom::Current(4))?;
+            }
         }
         Ok(i)
     }

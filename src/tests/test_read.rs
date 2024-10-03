@@ -18,7 +18,20 @@ fn crc_store(len: usize) -> CrcStore<Cursor> {
 
 #[test]
 #[rustfmt::skip]
-fn test_read_start_0() {
+fn test_read_len_26_start_0() {
+    let mut store = crc_store(26); // body_len=12
+    let mut read_buf = vec![0; 20]; // only 18 needed
+    let result = store.read(&mut read_buf);
+    let inner: Vec<u8> = store.inner.into_inner();
+    assert!(result.is_ok());
+    assert_eq!(result.unwrap(), 18);
+    assert_eq!(read_buf[ 0 .. 12], inner[ 0 .. 12]);
+    assert_eq!(read_buf[12 .. 18], inner[16 .. 22]);
+}
+
+#[test]
+#[rustfmt::skip]
+fn test_read_len_128_start_0() {
     let mut store = crc_store(128); // body_len=12
     let mut read_buf = vec![0; 48];
     let result = store.read(&mut read_buf);
@@ -33,7 +46,7 @@ fn test_read_start_0() {
 
 #[test]
 #[rustfmt::skip]
-fn test_read_start_1() {
+fn test_read_len_128_start_start_1() {
     let mut store = crc_store(128); // body_len=12
     store.seek(SeekFrom::Start(1)).unwrap();
     let mut read_buf = vec![0; 47];

@@ -3,6 +3,10 @@ use std::io::{ErrorKind, Read, Seek, Write};
 
 use crate::CrcStore;
 
+pub fn min3<T: Ord>(v1: T, v2: T, v3: T) -> T {
+    v1.min(v2).min(v3)
+}
+
 impl<I: Read + Write + Seek> CrcStore<I> {
     /// Read up to `n` bytes from the `inner` I/O object using the provided
     /// buffer. Returns the number of bytes read. Updates `self.inner_pos`

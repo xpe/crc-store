@@ -10,6 +10,7 @@ mod write;
 pub use config::*;
 pub use error::*;
 pub use store::*;
+pub use utility::*;
 
 #[cfg(test)]
 #[path = "tests/lib.rs"]
