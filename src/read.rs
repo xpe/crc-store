@@ -20,6 +20,10 @@ impl<I: Read + Write + Seek> Read for CrcStore<I> {
             let bytes_read = self.read_buf(&mut buf[i .. i + n])?;
             assert!(bytes_read > 0);
             i += bytes_read;
+
+            if self.cfg.validate_on_read {
+                todo!();
+            }
             self.inner.seek(SeekFrom::Current(4))?;
             self.inner_pos += 4;
         }
