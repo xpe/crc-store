@@ -42,7 +42,10 @@ impl<I: Read + Write + Seek> CrcStore<I> {
             let k = min(remain, self.cfg.buf_len as usize);
             let j = self.read_up_to(k)?;
             if j != k {
-                return Err(io::Error::new(InvalidData, "internal error"));
+                return Err(io::Error::new(
+                    InvalidData,
+                    "internal error: read_start_of_segment()",
+                ));
             }
             remain -= j;
             hasher.update(&self.buf[0 .. j]);
@@ -67,7 +70,11 @@ impl<I: Read + Write + Seek> CrcStore<I> {
             self.inner_len = max(self.inner_len, self.inner_pos);
             i += k;
 
-            self.read_end_of_body(hasher)?;
+            // For the last segment, the checksum is written immediately after the last body
+            // data. This means the last segment is not necessarily full-length.
+            if self.inner_pos < self.inner_len {
+                self.read_end_of_body(hasher)?;
+            }
 
             // write checksum
             let checksum = hasher.clone().finalize();
@@ -92,7 +99,10 @@ impl<I: Read + Write + Seek> CrcStore<I> {
             let k = min(remain, self.cfg.buf_len as usize);
             let j = self.read_up_to(k)?;
             if j != k {
-                return Err(io::Error::new(InvalidData, "internal error"));
+                return Err(io::Error::new(
+                    InvalidData,
+                    "internal error: read_end_of_body()",
+                ));
             }
             hasher.update(&self.buf[0 .. j]);
             remain -= j;
