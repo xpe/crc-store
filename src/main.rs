@@ -20,10 +20,7 @@ fn main() {
     // seek to the beginning and read the data back
     store.seek(SeekFrom::Start(0)).unwrap();
     let mut buf = Vec::new();
-    println!("read_to_end()...");
     store.read_to_end(&mut buf).unwrap();
-    println!("buf  : {:?}", buf);
-    println!("data : {:?}", data);
     assert_eq!(buf, data);
 
     // validate all checksums
