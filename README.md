@@ -82,6 +82,16 @@ data with checksums:
 | 63 53 74 6F 72 65 C7 16 5C 39                   | cStore..\9       |
 ```
 
+## Fuzz Testing
+
+Once you have [cargo fuzz][1] installed, run fuzz testing with:
+
+```console
+cargo fuzz run fuzz_methods
+```
+
+[1]: https://github.com/rust-fuzz/cargo-fuzz
+
 ## Or Roll Your Own?
 
 It might sound simple, but implementing a correct CRC-based storage system can be tricky. This library is extensively tested and (hopefully) correct.
