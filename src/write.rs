@@ -77,12 +77,12 @@ impl<I: Read + Write + Seek> CrcStore<I> {
             }
 
             // write checksum
-            let checksum = hasher.clone().finalize();
+            let checksum: u32 = hasher.clone().finalize();
+            hasher.reset();
             let checksum_bytes = checksum.to_be_bytes();
             self.inner.write_all(&checksum_bytes)?;
             self.inner_pos += 4;
             self.inner_len = max(self.inner_len, self.inner_pos);
-            hasher.reset();
         }
         Ok(i)
     }
