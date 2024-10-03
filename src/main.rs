@@ -31,7 +31,7 @@ fn main() {
     // display underlying data
     let cursor = store.into_inner();
     let vec = cursor.into_inner();
-    println!("\ndata with checksums:\n{}", multiline_hex_dump(&vec, 12));
+    println!("\ndata with checksums:\n{}", multiline_hex_dump(&vec, 16));
 }
 
 fn multiline_hex_dump(buf: &[u8], len: usize) -> String {
