@@ -84,6 +84,12 @@ impl<I: Read + Write + Seek> CrcStore<I> {
             self.inner_pos += 4;
             self.inner_len = max(self.inner_len, self.inner_pos);
         }
+        if self.inner_pos % s > 4 {
+            // When writing a last segment that isn't full length, rewind 4 bytes. This way
+            // `inner_pos` points to the correct place to write in the future.
+            self.inner.seek(SeekFrom::Current(-4))?;
+            self.inner_pos -= 4;
+        }
         Ok(i)
     }
 
