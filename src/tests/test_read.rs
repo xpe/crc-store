@@ -18,7 +18,7 @@ fn crc_store(len: usize) -> CrcStore<Cursor> {
 
 #[test]
 #[rustfmt::skip]
-fn test_read_len_26_start_0() {
+fn test_len_26_read() {
     let mut store = crc_store(26); // body_len=12
     let mut read_buf = vec![0; 20]; // only 18 needed
     let result = store.read(&mut read_buf);
@@ -30,7 +30,7 @@ fn test_read_len_26_start_0() {
 }
 
 #[test]
-fn test_read_len_26_start_0_read_again() {
+fn test_len_26_read_read() {
     let mut store = crc_store(26); // body_len=12
     {
         let mut read_buf = vec![0; 20]; // only 0 needed
@@ -48,7 +48,7 @@ fn test_read_len_26_start_0_read_again() {
 
 #[test]
 #[rustfmt::skip]
-fn test_read_len_128_start_0() {
+fn test_len_128_read() {
     let mut store = crc_store(128); // body_len=12
     let mut read_buf = vec![0; 48];
     let result = store.read(&mut read_buf);
@@ -63,7 +63,7 @@ fn test_read_len_128_start_0() {
 
 #[test]
 #[rustfmt::skip]
-fn test_read_len_128_start_start_1() {
+fn test_len_128_seek_start_1_read() {
     let mut store = crc_store(128); // body_len=12
     store.seek(SeekFrom::Start(1)).unwrap();
     let mut read_buf = vec![0; 47];
@@ -79,7 +79,7 @@ fn test_read_len_128_start_start_1() {
 
 #[test]
 #[rustfmt::skip]
-fn test_read_current_12() {
+fn test_len_128_seek_current_12_read() {
     let mut store = crc_store(128); // body_len=12
     store.seek(SeekFrom::Current(12)).unwrap();
     let mut read_buf = vec![0; 24];
@@ -92,7 +92,7 @@ fn test_read_current_12() {
 }
 
 #[test]
-fn test_read_end_8() {
+fn test_len_128_seek_end_m8_read() {
     let mut store = crc_store(128); // body_len=12
     let pos = store.seek(SeekFrom::End(-8)).unwrap();
     assert_eq!(pos, 116); // 128 - 8 - 4
@@ -106,7 +106,7 @@ fn test_read_end_8() {
 
 #[test]
 #[rustfmt::skip]
-fn test_read_end_16() {
+fn test_len_128_seek_end_m16_read() {
     let mut store = crc_store(128); // body_len=12
     let pos = store.seek(SeekFrom::End(-16)).unwrap();
     //   0 ..  16: segment 0
