@@ -30,6 +30,23 @@ fn test_read_len_26_start_0() {
 }
 
 #[test]
+fn test_read_len_26_start_0_read_again() {
+    let mut store = crc_store(26); // body_len=12
+    {
+        let mut read_buf = vec![0; 20]; // only 0 needed
+        let result = store.read(&mut read_buf);
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap(), 18);
+    }
+    {
+        let mut read_buf = vec![0; 20]; // only 0 needed
+        let result = store.read(&mut read_buf);
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap(), 0);
+    }
+}
+
+#[test]
 #[rustfmt::skip]
 fn test_read_len_128_start_0() {
     let mut store = crc_store(128); // body_len=12
