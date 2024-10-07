@@ -8,6 +8,9 @@ use libfuzzer_sys::fuzz_target;
 
 const MAX_READ_BUF_LEN: u32 = 4194304; // 4 MB
 
+/// Maximum seek is arbitrarily set to 1 megabyte (1000 ^ 2).
+const MAX_SEEK: i64 = 1_000_000;
+
 fuzz_target!(|setup: Setup| {
     let _ = execute_setup(setup);
 });
@@ -45,9 +48,33 @@ fn call_method(store: &mut CrcStore<Cursor<Vec<u8>>>, method: Method) -> io::Res
         }
         Method::Seek { seek_from } => {
             let arg = match seek_from {
-                SeekFrom::Start(n) => io::SeekFrom::Start(n),
-                SeekFrom::End(n) => io::SeekFrom::End(n),
-                SeekFrom::Current(n) => io::SeekFrom::Current(n),
+                SeekFrom::Start(n) => {
+                    if n >= MAX_SEEK as u64 {
+                        return Err(io::Error::new(
+                            io::ErrorKind::InvalidInput,
+                            "seek distance too large",
+                        ));
+                    }
+                    io::SeekFrom::Start(n)
+                }
+                SeekFrom::Current(n) => {
+                    if n >= MAX_SEEK || n <= -MAX_SEEK {
+                        return Err(io::Error::new(
+                            io::ErrorKind::InvalidInput,
+                            "seek distance too large",
+                        ));
+                    }
+                    io::SeekFrom::Current(n)
+                }
+                SeekFrom::End(n) => {
+                    if n >= MAX_SEEK || n <= -MAX_SEEK {
+                        return Err(io::Error::new(
+                            io::ErrorKind::InvalidInput,
+                            "seek distance too large",
+                        ));
+                    }
+                    io::SeekFrom::End(n)
+                }
             };
             store.seek(arg)?;
         }
