@@ -171,6 +171,7 @@ impl<I: Read + Write + Seek> CrcStore<I> {
             -((b - 1) - offset)
         };
         let checksums_to_skip = outer_n.checked_add(shift).and_then(|v| v.checked_div(b))?;
-        Some(outer_n + checksums_to_skip * 4)
+        let skip = checksums_to_skip.checked_mul(4)?;
+        outer_n.checked_add(skip)
     }
 }
