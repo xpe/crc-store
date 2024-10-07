@@ -5,23 +5,35 @@ use std::io::{Read, Seek, SeekFrom, Write};
 
 use super::CrcStore;
 
+/// Maximum seek is arbitrarily set to 1 exabyte (1000 ^ 6).
+const MAX_SEEK: i64 = 1_000_000_000_000_000_000;
+
 impl<I: Read + Write + Seek> Seek for CrcStore<I> {
     /// Seek according to given outer position.
     fn seek(&mut self, outer_pos: SeekFrom) -> IoResult<u64> {
         let inner_pos: SeekFrom = match outer_pos {
             SeekFrom::Start(outer_n) => {
+                if outer_n >= MAX_SEEK as u64 {
+                    return Err(IoError::new(InvalidInput, "exceeded MAX_SEEK_FROM_START"));
+                }
                 let inner_n: u64 = self
                     .start_pos(outer_n)
                     .ok_or_else(|| IoError::new(InvalidInput, "checked arithmetic"))?;
                 SeekFrom::Start(inner_n)
             }
             SeekFrom::Current(outer_n) => {
+                if outer_n >= MAX_SEEK || outer_n <= -MAX_SEEK {
+                    return Err(IoError::new(InvalidInput, "exceeded MAX_SEEK"));
+                }
                 let inner_n: i64 = self
                     .current_pos(outer_n)
                     .ok_or_else(|| IoError::new(InvalidInput, "checked arithmetic"))?;
                 SeekFrom::Current(inner_n)
             }
             SeekFrom::End(outer_n) => {
+                if outer_n >= MAX_SEEK || outer_n <= -MAX_SEEK {
+                    return Err(IoError::new(InvalidInput, "exceeded MAX_SEEK"));
+                }
                 let inner_n: i64 = self
                     .end_pos(-outer_n)
                     .ok_or_else(|| IoError::new(InvalidInput, "checked arithmetic"))?;
