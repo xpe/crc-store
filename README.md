@@ -82,16 +82,22 @@ data with checksums:
 | 63 53 74 6F 72 65 C7 16 5C 39                   | cStore..\9       |
 ```
 
+## Or Roll Your Own?
+
+It might sound simple, but implementing a correct CRC-based storage system can be tricky. This library is extensively tested and (hopefully) correct.
+
+## Correctness
+
+As of 2024-10-07, fuzz testing has surfaced no new crashes despite exploring more than _70 million_ inputs. In this project, each input is a sequence of operations in the `CrcStore` API, including: `new`, `seek`, `read`, and `write`.
+
+Of course, a lack of crashes is not proof of correctness. However, when combined with other testing strategies, this is reassuring.
+
 ## Fuzz Testing
 
-Once you have [cargo fuzz][1] installed, run fuzz testing with:
+After you install [cargo fuzz] as recommended (which involves using Nightly Rust), then you can run fuzz testing with:
 
 ```console
 cargo fuzz run fuzz_methods
 ```
 
-[1]: https://github.com/rust-fuzz/cargo-fuzz
-
-## Or Roll Your Own?
-
-It might sound simple, but implementing a correct CRC-based storage system can be tricky. This library is extensively tested and (hopefully) correct.
+[cargo fuzz]: https://github.com/rust-fuzz/cargo-fuzz
