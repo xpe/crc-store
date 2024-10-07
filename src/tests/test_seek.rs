@@ -213,7 +213,7 @@ fn test_len_5_seek_from_end_0() {
 #[test]
 fn test_len_5_seek_from_end_1() {
     let mut store = crc_store(5);
-    let result = store.seek(SeekFrom::End(1));
+    let result = store.seek(SeekFrom::End(-1));
     assert!(result.is_ok());
     assert_eq!(result.unwrap(), 0);
 }
@@ -243,7 +243,7 @@ fn test_len_22_seek_from_end_0() {
 #[test]
 fn test_len_22_seek_from_end_1() {
     let mut store = crc_store(22);
-    let result = store.seek(SeekFrom::End(1));
+    let result = store.seek(SeekFrom::End(-1));
     assert!(result.is_ok());
     assert_eq!(result.unwrap(), 17);
 }

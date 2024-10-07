@@ -35,7 +35,7 @@ impl<I: Read + Write + Seek> Seek for CrcStore<I> {
                     return Err(IoError::new(InvalidInput, "exceeded MAX_SEEK"));
                 }
                 let inner_n: i64 = self
-                    .end_pos(-outer_n)
+                    .end_pos(outer_n)
                     .ok_or_else(|| IoError::new(InvalidInput, "checked arithmetic"))?;
                 SeekFrom::End(inner_n)
             }

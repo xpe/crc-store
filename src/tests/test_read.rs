@@ -77,7 +77,7 @@ fn test_read_current_12() {
 #[test]
 fn test_read_end_8() {
     let mut store = crc_store(128); // body_len=12
-    let pos = store.seek(SeekFrom::End(8)).unwrap();
+    let pos = store.seek(SeekFrom::End(-8)).unwrap();
     assert_eq!(pos, 116); // 128 - 8 - 4
     let mut read_buf = vec![0; 8];
     let result = store.read(&mut read_buf);
@@ -91,7 +91,7 @@ fn test_read_end_8() {
 #[rustfmt::skip]
 fn test_read_end_16() {
     let mut store = crc_store(128); // body_len=12
-    let pos = store.seek(SeekFrom::End(16)).unwrap();
+    let pos = store.seek(SeekFrom::End(-16)).unwrap();
     //   0 ..  16: segment 0
     //  96 .. 112: segment 6
     // 112 .. 128: segment 7
