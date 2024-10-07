@@ -15,8 +15,15 @@ impl<I: Read + Write + Seek> Read for CrcStore<I> {
             // each iteration reads as much of a segment as it can
             let buf_remain = buf.len() - i;
             let body_remain = (b - (self.inner_pos % s)) as usize;
+
+            // calculate distance to the start of the last checksum
             assert!(self.inner_len > 4);
-            let to_last_checksum = (self.inner_len - 4 - self.inner_pos) as usize;
+            let last_checksum_pos = self.inner_len - 4;
+            if self.inner_pos >= last_checksum_pos {
+                break;
+            }
+            let to_last_checksum = (last_checksum_pos - self.inner_pos) as usize;
+
             let n = min3(buf_remain, body_remain, to_last_checksum);
             let bytes_read = self.read_buf(&mut buf[i .. i + n])?;
             if bytes_read == 0 {
