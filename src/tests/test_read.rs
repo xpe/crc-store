@@ -47,6 +47,27 @@ fn test_len_26_read_read() {
 }
 
 #[test]
+fn test_len_26_read_seek_current_1_read() {
+    let mut store = crc_store(26); // body_len=12
+    {
+        let mut read_buf = vec![0; 20]; // only 0 needed
+        let result = store.read(&mut read_buf);
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap(), 18);
+    }
+    {
+        let result = store.seek(SeekFrom::Current(1));
+        assert!(result.is_ok());
+    }
+    {
+        let mut read_buf = vec![0; 20]; // only 0 needed
+        let result = store.read(&mut read_buf);
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap(), 0);
+    }
+}
+
+#[test]
 #[rustfmt::skip]
 fn test_len_128_read() {
     let mut store = crc_store(128); // body_len=12
