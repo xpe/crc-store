@@ -53,7 +53,7 @@ impl<I: Read + Write + Seek> CrcStore<I> {
     /// Postcondition: Either
     /// - inner_pos % seg_len == 0
     /// - inner_pos @ EOF
-    pub fn validate_next_segments(&mut self) -> Result<(), ValidateError> {
+    fn validate_next_segments(&mut self) -> Result<(), ValidateError> {
         assert_eq!(self.inner_pos % self.cfg.seg_len as u64, 0);
         assert!(self.cfg.buf_len >= self.cfg.seg_len);
         assert_eq!(self.cfg.buf_len % self.cfg.seg_len, 0);
@@ -82,7 +82,7 @@ impl<I: Read + Write + Seek> CrcStore<I> {
     }
 
     /// Validate by processing one segment at a time.
-    pub fn validate_larger_segments(&mut self) -> Result<(), ValidateError> {
+    fn validate_larger_segments(&mut self) -> Result<(), ValidateError> {
         assert!(self.cfg.seg_len > self.cfg.buf_len);
         let mut seg_index: u64 = 0;
         let mut invalid: Option<Vec<u64>> = None;
@@ -105,7 +105,7 @@ impl<I: Read + Write + Seek> CrcStore<I> {
     /// Postcondition: Either
     /// - inner_pos % seg_len == 0
     /// - inner_pos @ EOF
-    pub fn is_valid_segment(&mut self) -> Result<bool, IoError> {
+    fn is_valid_segment(&mut self) -> Result<bool, IoError> {
         assert_eq!(self.inner_pos % self.cfg.seg_len as u64, 0);
         if self.inner_len == 0 {
             return Ok(true);
