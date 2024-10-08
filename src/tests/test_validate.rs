@@ -3,6 +3,26 @@ use super::helpers::Cursor;
 use crate::{Config, CrcStore};
 
 #[test]
+fn test_validate_len_9() {
+    let len = 9;
+    let mut rng = rand::thread_rng();
+    for seg_len in [16, 32, 64, 128, 256, 512] {
+        for buf_len in [8, 16, 32, 64, 128, 256, 512] {
+            let config = Config {
+                seg_len,
+                buf_len,
+                validate_on_read: false,
+            };
+            let data = h::valid_data(&mut rng, seg_len, len);
+            let cursor = Cursor::new(data);
+            let mut store = CrcStore::new(config, cursor).unwrap();
+            let result = store.validate();
+            assert!(result.is_ok());
+        }
+    }
+}
+
+#[test]
 fn test_validate_len_64() {
     let len = 64;
     let mut rng = rand::thread_rng();
