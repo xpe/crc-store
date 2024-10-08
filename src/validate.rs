@@ -4,6 +4,7 @@ use std::io::{Read, Seek, SeekFrom, Write};
 
 use crc32fast::Hasher;
 
+// use crate::{min3, CrcStore, ValidateError};
 use crate::{CrcStore, ValidateError};
 
 impl<I: Read + Write + Seek> CrcStore<I> {

@@ -1,3 +1,5 @@
+use std::io::Error as IoError;
+use std::io::ErrorKind::InvalidInput;
 use std::io::{self, Read, Seek, SeekFrom, Write};
 
 use crate::{min3, CrcStore};
@@ -31,8 +33,8 @@ impl<I: Read + Write + Seek> Read for CrcStore<I> {
             }
             i += bytes_read;
             if self.cfg.validate_on_read {
-                return Err(io::Error::new(
-                    io::ErrorKind::InvalidInput,
+                return Err(IoError::new(
+                    InvalidInput,
                     "validate_on_read not yet implemented",
                 ));
             }

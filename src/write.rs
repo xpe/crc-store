@@ -1,6 +1,6 @@
 use std::cmp::{max, min};
+use std::io::Error as IoError;
 use std::io::ErrorKind::InvalidData;
-// use std::io::{self, ErrorKind, Read, Seek, SeekFrom, Write};
 use std::io::{self, Read, Seek, SeekFrom, Write};
 
 use crc32fast::Hasher;
@@ -42,7 +42,7 @@ impl<I: Read + Write + Seek> CrcStore<I> {
             let k = min(remain, self.cfg.buf_len as usize);
             let j = self.read_up_to(k)?;
             if j != k {
-                return Err(io::Error::new(
+                return Err(IoError::new(
                     InvalidData,
                     "internal error: read_start_of_segment()",
                 ));
@@ -105,7 +105,7 @@ impl<I: Read + Write + Seek> CrcStore<I> {
             let k = min(remain, self.cfg.buf_len as usize);
             let j = self.read_up_to(k)?;
             if j != k {
-                return Err(io::Error::new(
+                return Err(IoError::new(
                     InvalidData,
                     "internal error: read_end_of_body()",
                 ));
