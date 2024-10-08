@@ -18,7 +18,7 @@ fn empty_crc_store() -> CrcStore<Cursor> {
 /// Writes 24 bytes, which corresponds to 2 full segments. (Here, a segment is
 /// 16 bytes, so the body of each is 12 bytes.)
 #[test]
-fn test_crc_store_write_24() {
+fn test_write_24() {
     let mut store = empty_crc_store();
 
     let mut rng = rand::thread_rng();
@@ -39,11 +39,11 @@ fn test_crc_store_write_24() {
     assert_eq!(inner[28 .. 32], cs_bytes);
 }
 
-/// Writes 24 bytes first. Then 4 bytes in the first segment.  (Here, a segment
+/// Writes 24 bytes first. Then 4 bytes in the first segment. (Here, a segment
 /// is 16 bytes, so the body of each is 12 bytes.)
 #[test]
 #[rustfmt::skip]
-fn test_crc_store_write_24_then_4() {
+fn test_write_24_seek_start_4_write_4() {
     let mut store = empty_crc_store();
 
     let mut rng = rand::thread_rng();
@@ -66,7 +66,7 @@ fn test_crc_store_write_24_then_4() {
 /// Writes 18 bytes, which corresponds to one full segment (12 bytes) followed
 /// by a partial segment of 6 bytes.
 #[test]
-fn test_crc_store_write_18() {
+fn test_write_18() {
     let mut store = empty_crc_store();
 
     let mut rng = rand::thread_rng();
