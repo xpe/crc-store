@@ -63,6 +63,40 @@ fn test_write_18() {
     assert_eq!(inner[22 .. 26], cs_bytes);
 }
 
+/// Write twice:
+/// A. write 24 bytes (two full segments)
+/// B. write 12 bytes (one full segment)
+#[test]
+fn test_write_24_write_12() {
+    let mut store = empty_crc_store();
+
+    let mut rng = rand::thread_rng();
+    let data_0 = h::random_bytes(&mut rng, 24);
+    store.write_all(&data_0).unwrap();
+
+    let data_1 = h::random_bytes(&mut rng, 12);
+    store.write_all(&data_1).unwrap();
+    let inner = store.inner.into_inner();
+
+    // segment 0
+    let body = &data_0[0 .. 12];
+    assert_eq!(inner[0 .. 12], *body);
+    let cs_bytes = crc32fast::hash(body).to_be_bytes();
+    assert_eq!(inner[12 .. 16], cs_bytes);
+
+    // segment 1
+    let body = &data_0[12 .. 24];
+    assert_eq!(inner[16 .. 28], *body);
+    let cs_bytes = crc32fast::hash(body).to_be_bytes();
+    assert_eq!(inner[28 .. 32], cs_bytes);
+
+    // segment 2
+    let body = &data_1[0 .. 12];
+    assert_eq!(inner[32 .. 44], *body);
+    let cs_bytes = crc32fast::hash(body).to_be_bytes();
+    assert_eq!(inner[44 .. 48], cs_bytes);
+}
+
 /// Writes 24 bytes first. Then 4 bytes in the first segment. (Here, a segment
 /// is 16 bytes, so the body of each is 12 bytes.)
 #[test]
