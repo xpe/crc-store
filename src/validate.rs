@@ -18,6 +18,8 @@ impl<I: Read + Write + Seek> CrcStore<I> {
         }
     }
 
+    /// Call this when `seg_len` <= `buf_len`. Validate by processing one buffer
+    /// at a time.
     fn validate_smaller_segments(&mut self) -> Result<(), ValidateError> {
         assert!(self.cfg.seg_len <= self.cfg.buf_len);
         let mut invalid: Option<Vec<u64>> = None;
@@ -81,7 +83,8 @@ impl<I: Read + Write + Seek> CrcStore<I> {
         }
     }
 
-    /// Validate by processing one segment at a time.
+    /// Call this when `seg_len` > `buf_len`. Validate by processing one segment
+    /// at a time.
     fn validate_larger_segments(&mut self) -> Result<(), ValidateError> {
         assert!(self.cfg.seg_len > self.cfg.buf_len);
         let mut seg_index: u64 = 0;
