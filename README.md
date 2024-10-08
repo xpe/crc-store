@@ -86,6 +86,10 @@ data with checksums:
 
 It might sound simple, but implementing a correct CRC-based storage system can be tricky. This library is extensively tested and (hopefully) correct.
 
+## Incomplete Features
+
+The `validate_on_read` configuration option only supports `false` at this time.
+
 ## Correctness
 
 As of 2024-10-07, fuzz testing has surfaced no new crashes despite exploring more than _220 million_ inputs. In this project, each input is a sequence of operations in the `CrcStore` API, including: `new`, `seek`, `read`, and `write`.
