@@ -9,15 +9,18 @@ use crc32fast::Hasher;
 use crate::{CrcStore, ValidateError};
 
 impl<I: Read + Write + Seek> CrcStore<I> {
-    /// Does the inner I/O object contain valid data? This happens when the
-    /// checksums all match.
+    /// Returns `Ok(())` if the checksums match the data. Returns the file
+    /// position to the same position it started.
     pub fn validate(&mut self) -> Result<(), ValidateError> {
+        let original_pos = self.inner_pos;
         self.inner_pos = self.inner.seek(SeekFrom::Start(0))?;
-        if self.cfg.seg_len <= self.cfg.buf_len {
+        let result = if self.cfg.seg_len <= self.cfg.buf_len {
             self.validate_smaller_segments()
         } else {
             self.validate_larger_segments()
-        }
+        };
+        self.inner_pos = self.inner.seek(SeekFrom::Start(original_pos))?;
+        result
     }
 
     /// Call this when `seg_len` <= `buf_len`. Validate by processing one buffer
