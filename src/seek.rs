@@ -76,6 +76,7 @@ impl<I: Read + Write + Seek> CrcStore<I> {
     ///
     /// Lesson? `start_pos()` does not guarantee a readable body position.
     pub fn start_pos(&self, outer_n: u64) -> Option<u64> {
+        // TODO: review use of `u64::from` below...
         let b = u64::from(self.body_len());
         let s = u64::from(self.cfg.seg_len);
         let segment: u64 = outer_n / b;
