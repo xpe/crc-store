@@ -108,7 +108,7 @@ impl<I: Read + Write + Seek> CrcStore<I> {
     /// Postcondition: Either
     /// - inner_pos % seg_len == 0
     /// - inner_pos @ EOF
-    fn is_valid_segment(&mut self) -> Result<bool, IoError> {
+    pub(crate) fn is_valid_segment(&mut self) -> Result<bool, IoError> {
         assert_eq!(self.inner_pos % self.cfg.seg_len as u64, 0);
         if self.inner_len == 0 {
             return Ok(true);
