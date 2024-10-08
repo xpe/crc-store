@@ -15,8 +15,8 @@ path = ".."
 features = []
 
 [[bin]]
-name = "rwsv"
-path = "fuzz_targets/rwsv.rs"
+name = "fuzz_rwsv"
+path = "fuzz_targets/fuzz_rwsv.rs"
 test = false
 doc = false
 bench = false
