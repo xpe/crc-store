@@ -1,5 +1,6 @@
 use std::cmp::min;
 use std::io::Error as IoError;
+use std::io::ErrorKind::InvalidData;
 use std::io::{Read, Seek, SeekFrom, Write};
 
 use crc32fast::Hasher;
@@ -133,7 +134,10 @@ impl<I: Read + Write + Seek> CrcStore<I> {
             if remain == 4 {
                 return self.read_checksum();
             } else if remain < 4 {
-                panic!("internal error");
+                return Err(IoError::new(
+                    InvalidData,
+                    "internal error: process_segment()",
+                ));
             } else {
                 let body_remain = (remain - 4) as usize;
                 let to_read = min(body_remain, buf_len);
