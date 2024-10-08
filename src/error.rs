@@ -24,7 +24,6 @@ pub enum LenError {
 #[derive(Debug)]
 pub enum ValidateError {
     Checksum(Vec<u64>),
-    SegTooShort(u64),
     Io(io::Error),
 }
 
