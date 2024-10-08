@@ -98,7 +98,7 @@ fn call_method(store: &mut CrcStore<Cursor<Vec<u8>>>, method: Method) -> io::Res
         }
         Method::Validate => match store.validate() {
             Err(ValidateError::Io(e)) => Err(e),
-            Err(_) => Err(IoError::new(InvalidInput, "validation error")),
+            Err(ValidateError::Checksum(_)) => Ok(()),
             Ok(_) => Ok(()),
         },
     }
