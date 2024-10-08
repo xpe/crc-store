@@ -92,7 +92,7 @@ The `validate_on_read` configuration option only supports `false` at this time.
 
 ## Correctness
 
-As of 2024-10-07, fuzz testing has surfaced no new crashes despite exploring more than _220 million_ inputs. In this project, each input is a sequence of operations in the `CrcStore` API, including: `new`, `seek`, `read`, and `write`.
+As of 2024-10-08, fuzz testing has surfaced no new crashes despite exploring more than _30 million_ inputs. In this project, each input is a sequence of operations in the `CrcStore` API, including: `new`, `seek`, `read`, `write`, and `validate`.
 
 Of course, a lack of crashes is not proof of correctness. However, when combined with other testing strategies, this is reassuring.
 
@@ -101,7 +101,9 @@ Of course, a lack of crashes is not proof of correctness. However, when combined
 After you install [cargo fuzz] as recommended (which involves using Nightly Rust), then you can run fuzz testing with:
 
 ```console
-cargo fuzz run fuzz_methods
+cargo fuzz run fuzz_rwsv
 ```
+
+Note: "rwsv" stands for "read, write, seek, validate" -- the methods exercised by the fuzzer.
 
 [cargo fuzz]: https://github.com/rust-fuzz/cargo-fuzz
