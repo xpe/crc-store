@@ -10,7 +10,7 @@ impl<I: Read + Write + Seek> CrcStore<I> {
     /// Does the inner I/O object contain valid data? This happens when the
     /// checksums all match.
     pub fn validate(&mut self) -> Result<(), ValidateError> {
-        self.inner.seek(SeekFrom::Start(0))?;
+        self.inner_pos = self.inner.seek(SeekFrom::Start(0))?;
         if self.cfg.seg_len <= self.cfg.buf_len {
             self.validate_smaller_segments()
         } else {
