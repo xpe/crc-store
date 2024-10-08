@@ -42,4 +42,14 @@ impl<I: Read + Write + Seek> CrcStore<I> {
         self.inner_pos += i as u64;
         Ok(i)
     }
+
+    /// Reads up to `n` bytes from the `inner` I/O object using the
+    /// pre-allocated `self.buf` buffer. Updates the `hasher` accordingly.
+    /// Returns the checksum from the last 4 bytes read.
+    pub(crate) fn read_checksum(&mut self) -> Result<u32, IoError> {
+        let i = self.read_up_to(4)?;
+        assert_eq!(i, 4);
+        let bytes: [u8; 4] = self.buf[.. 4].try_into().unwrap();
+        Ok(u32::from_be_bytes(bytes))
+    }
 }
