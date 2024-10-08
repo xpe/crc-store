@@ -88,7 +88,7 @@ It might sound simple, but implementing a correct CRC-based storage system can b
 
 ## Correctness
 
-As of 2024-10-07, fuzz testing has surfaced no new crashes despite exploring more than _70 million_ inputs. In this project, each input is a sequence of operations in the `CrcStore` API, including: `new`, `seek`, `read`, and `write`.
+As of 2024-10-07, fuzz testing has surfaced no new crashes despite exploring more than _220 million_ inputs. In this project, each input is a sequence of operations in the `CrcStore` API, including: `new`, `seek`, `read`, and `write`.
 
 Of course, a lack of crashes is not proof of correctness. However, when combined with other testing strategies, this is reassuring.
 
