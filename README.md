@@ -92,15 +92,17 @@ The `validate_on_read` configuration option only supports `false` at this time.
 
 ## Fuzz Testing
 
-After you install [cargo fuzz] as recommended (which involves using Nightly Rust), then you can run fuzz testing with:
+After you install [cargo fuzz] as recommended (which involves using [Nightly Rust]), then you can run fuzz testing with:
 
-```console
-cargo fuzz run fuzz_rwsv
+```sh
+cargo +nightly fuzz run fuzz_rwsv
 ```
 
 Note: "rwsv" stands for "read, write, seek, validate" -- the methods exercised by the fuzzer.
 
 [cargo fuzz]: https://github.com/rust-fuzz/cargo-fuzz
+
+[Nightly Rust]: https://doc.rust-lang.org/book/appendix-07-nightly-rust.html
 
 ## Correctness
 
